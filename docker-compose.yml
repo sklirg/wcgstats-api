@@ -1,7 +1,6 @@
 version: '2'
 services:
   wcgstats-api:
-    build: .
     image: registry.sklirg.io/wcgstats-api:1.0.0
     ports:
       - "8000:8000"
