@@ -1,0 +1,16 @@
+version: '2'
+services:
+  wcgstats-api:
+    build: .
+    image: registry.sklirg.io/wcgstats-api:1.0.0
+    ports:
+      - "8000:8000"
+    volumes_from:
+      - wcgstats-gui
+    environment:
+      - WCGSTATSAPI_STATIC_ROOT=/client
+  wcgstats-gui:
+    image: registry.sklirg.io/wcgstats-gui:1.0.0
+    command: "cp -r build/. /out"
+    volumes:
+      - /client
