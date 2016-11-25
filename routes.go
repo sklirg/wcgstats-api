@@ -54,6 +54,8 @@ func GetTeamStats(c *gin.Context) {
 	defer client.Close()
 
 	res := client.HVals(c.Param("team_id"))
+	start_date := c.DefaultQuery("start_date", "2016-11-24")
+	end_date := c.DefaultQuery("end_date", "2016-12-24")
 
 	vals, err := res.Result()
 
@@ -63,23 +65,25 @@ func GetTeamStats(c *gin.Context) {
 		return
 	}
 
-	stats := make([]DailyStatisticsTotals, len(vals))
+	stats := make([]DailyStatisticsTotals, 0)
 
 	for i := range vals {
-		err = json.Unmarshal([]byte(vals[i]), &stats[i])
+		dailyStat := DailyStatisticsTotals{}
+		err = json.Unmarshal([]byte(vals[i]), &dailyStat)
 		if err != nil {
 			log.WithField("err", err).Error("Error getting result")
 			c.JSON(500, gin.H{"message": "Something went wrong."})
 			return
 		}
+		if ShouldAddDayStats(dailyStat, start_date, end_date) {
+			stats = append(stats, dailyStat)
+		}
 	}
-
-	// log.Infof("stats %+v", stats)
 
 	// Add last updated
 	// Add last checked
 	c.JSON(200, gin.H{
-		"count":   len(vals),
+		"count":   len(stats),
 		"results": stats,
 	})
 }
