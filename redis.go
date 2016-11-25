@@ -10,7 +10,7 @@ import (
 func GetClient() *redis.Client {
 	log.Debug("Getting a redis client connection")
 
-	redis_host := os.Getenv("WCGSTATS_SCRAPER_REDIS_HOST")
+	redis_host := os.Getenv("WCGSTATS_API_REDIS_HOST")
 	if redis_host == "" {
 		redis_host = "localhost"
 	}
