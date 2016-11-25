@@ -15,6 +15,7 @@ func GetTeams(c *gin.Context) {
 	keys, err := res.Result()
 
 	if err != nil {
+		log.WithField("err", err).Error("Could not connect.")
 		c.JSON(500, gin.H{"message": "Something went wrong."})
 		return
 	}
@@ -39,6 +40,7 @@ func GetTeamDates(c *gin.Context) {
 	res := client.HKeys(c.Param("team_id"))
 	dates, err := res.Result()
 	if err != nil {
+		log.WithField("err", err).Error("Could not connect.")
 		c.JSON(500, gin.H{"message": "Something went wrong."})
 		return
 	}
@@ -56,7 +58,8 @@ func GetTeamStats(c *gin.Context) {
 	vals, err := res.Result()
 
 	if err != nil {
-		log.Error("Error getting result")
+		log.WithField("err", err).Error("Error getting result")
+		c.JSON(500, gin.H{"message": "Something went wrong."})
 		return
 	}
 
@@ -64,6 +67,11 @@ func GetTeamStats(c *gin.Context) {
 
 	for i := range vals {
 		err = json.Unmarshal([]byte(vals[i]), &stats[i])
+		if err != nil {
+			log.WithField("err", err).Error("Error getting result")
+			c.JSON(500, gin.H{"message": "Something went wrong."})
+			return
+		}
 	}
 
 	// log.Infof("stats %+v", stats)
